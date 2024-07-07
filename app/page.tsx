@@ -126,8 +126,7 @@ export default function Page() {
   return (
     <main className="flex min-h-screen flex-col items-center bg-gradient-to-r from-purple-800 to-blue-600 p-6">
       <div className="mt-4 flex grow flex-col gap-4 md:w-2/3">
-        <div className="flex flex-col justify-center gap-6 rounded-lg bg-gray-50 p-6 shadow-lg">
-          <p className="text-3xl font-bold text-gray-800 text-center">
+          <p className="text-3xl font-bold text-white text-center">
             Veyt Assignment
           </p>
           <form className="flex flex-col items-center space-y-4">
@@ -141,7 +140,6 @@ export default function Page() {
               placeholder="Search for a Stock..."
             />
           </form>
-        </div>
         {results.length > 0 && (
           <div className="mt-6">
             <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
@@ -181,7 +179,8 @@ export default function Page() {
         <select
           value={limit}
           onChange={handleLimitChange}
-          className="w-1/2 rounded-md border border-gray-200 py-2 px-4 text-gray-700"
+          style={{ backgroundColor: "rgb(55, 68, 107)", borderColor: "rgb(73 90 143)", color: "white" }}
+          className="rounded-md border border-gray-200 py-2 px-4 text-gray-700  hover:bg-gray-300"
         >
           <option value={5}>5 Items</option>
           <option value={10}>10 Items</option>
