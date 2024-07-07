@@ -1,4 +1,4 @@
 export default function Page(){
-    return <p>Stock page</p>;
+    return <p>Stock page go</p>;
     
 }
