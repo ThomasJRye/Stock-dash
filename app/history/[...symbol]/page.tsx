@@ -2,52 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ReactApexChart from 'react-apexcharts';
+import { QuoteData, HistoricalDataPoint, HistoricalDataResponse } from '../../types';
+import '../../ui/global.css';
 
-interface QuoteData {
-  symbol: string;
-  name: string;
-  price: number;
-  changesPercentage: number;
-  change: number;
-  dayLow: number;
-  dayHigh: number;
-  yearHigh: number;
-  yearLow: number;
-  marketCap: number;
-  priceAvg50: number;
-  priceAvg200: number;
-  exchange: string;
-  volume: number;
-  avgVolume: number;
-  open: number;
-  previousClose: number;
-  eps: number;
-  pe: number;
-  earningsAnnouncement: string;
-  sharesOutstanding: number;
-  timestamp: number;
-}
-
-interface HistoricalDataPoint {
-  date: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  adjClose: number;
-  volume: number;
-  unadjustedVolume: number;
-  change: number;
-  changePercent: number;
-  vwap: number;
-  label: string;
-  changeOverTime: number;
-}
-
-interface HistoricalDataResponse {
-  symbol: string;
-  historical: HistoricalDataPoint[];
-}
 
 const StockPage = ({ params: { symbol } }) => {
   const router = useRouter();
@@ -70,7 +27,14 @@ const StockPage = ({ params: { symbol } }) => {
       try {
         const response = await fetch(`https://financialmodelingprep.com/api/v3/historical-price-full/${symbol}?apikey=${apiKey}`);
         const data: HistoricalDataResponse = await response.json();
-        setHistoricalData(data.historical); // Assuming data.historical contains the historical price data
+      
+      const oneMonthAgo = new Date();
+      oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+      const filteredData = data.historical.filter(point => new Date(point.date) >= oneMonthAgo);
+      const reversedData = filteredData.reverse();
+
+      setHistoricalData(reversedData); // Use the filtered and reversed data
       } catch (error) {
         console.error("Error fetching historical data:", error);
       }
@@ -81,54 +45,56 @@ const StockPage = ({ params: { symbol } }) => {
   }, [symbol, apiKey]);
 
   const chartOptions = {
+    // Define your chart options here
     chart: {
       type: 'line',
-      zoom: {
-        enabled: false
-      }
-    },
-    title: {
-      text: `${quoteData?.name} Stock Price`,
-      align: 'center'
-    },
-    xaxis: {
-      categories: historicalData ? historicalData.map(point => point.date) : [],
-      labels: {
-        format: 'dd MMM'
-      }
-    },
-    yaxis: {
-      title: {
-        text: 'Price'
-      }
     },
     series: [
       {
         name: 'Price',
         data: historicalData ? historicalData.map(point => point.close) : []
-      }
-    ]
+      },
+    ],
+    xaxis: {
+      categories: historicalData ? historicalData.map(point => point.date) : []
+    },
   };
 
   return (
-    <div className="stock-page-container">
-      <button type="button" onClick={() => router.back()}>
-        Click here to go back
-      </button>
-      <h1>{quoteData?.name}</h1>
-      <h2>Symbol: {symbol}</h2>
-      {quoteData && (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-purple-800 to-blue-600">
+      <div className="flex items-center space-x-4 mb-4">
+        <button type="button" onClick={() => router.back()} className="mb-4 px-4 py-2 text-white bg-gray-800 rounded-full hover:bg-gray-700 focus:outline-none">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 mr-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
         <div>
-          {/* <p>Price: {quoteData.price}</p>
-          <p>Change: {quoteData.change}</p>
-          <p>Change Percentage: {quoteData.changesPercentage}</p> */}
+          <h1 className="text-4xl font-bold text-white mb-2">{quoteData?.name}</h1>
+          <h2 className="text-2xl text-gray-300 mb-4">Symbol: {symbol}</h2>
         </div>
-      )}
-      <div id="chart">
-        {historicalData && <ReactApexChart series={chartOptions.series} type="line" height={350} />}
+      </div>
+      <div id="chart" className="bg-white rounded-lg shadow-lg p-6" style={{ width: '600px' }}>
+        {historicalData && <ReactApexChart
+            options={chartOptions}
+            series={chartOptions.series}
+            type="line"
+            height={350}
+          />}
       </div>
     </div>
   );
+  
 };
 
 export default StockPage;

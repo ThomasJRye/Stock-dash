@@ -3,18 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from 'next/link';
 import React from "react";
-
-interface Stock {
-  symbol: string;
-  name: string;
-  currency: string;
-  stockExchange: string;
-  exchangeShortName: string;
-  price?: number | string;
-  changes?: number | string;
-  marketCap?: number | string;
-  lastTrade?: string | null;
-}
+import { Stock } from "./types";
+import './ui/global.css';
 
 const mockData: Stock[] = [
   { symbol: "AAPL", name: "Apple Inc.", currency: "USD", stockExchange: "NASDAQ", exchangeShortName: "NASDAQ", price: 150, changes: 1.5, marketCap: "2.4T", lastTrade: "2024-07-07" },
