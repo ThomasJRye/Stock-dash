@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
+import Link from 'next/link';
+import React from "react";
 
 interface Stock {
   symbol: string;
@@ -47,52 +49,53 @@ export default function Page() {
     setPage(1); // Reset to first page when limit changes
   };
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   if (query.trim() === '') return;
-  //   const offset = (page - 1) * limit;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (query.trim() === '') return;
+    const offset = (page - 1) * limit;
 
-  //   const responseCIKs = await fetch(`https://financialmodelingprep.com/api/v3/search?query=${query}&limit=${limit}&offset=${offset}&apikey=${apiKey}`);
-  //   const CIKs = await responseCIKs.json();
-  //   setTotalResults(CIKs.length)
+    const responseCIKs = await fetch(`https://financialmodelingprep.com/api/v3/search?query=${query}&limit=${limit}&offset=${offset}&apikey=${apiKey}`);
+    const CIKs = await responseCIKs.json();
+    setTotalResults(CIKs.length)
 
-  //   const stocks = CIKs.slice(0, limit).map((stock: any) => ({
-  //     symbol: stock.symbol,
-  //     name: stock.name,
-  //     currency: stock.currency,
-  //     stockExchange: stock.stockExchange,
-  //     exchangeShortName: stock.exchangeShortName,
-  //   }));
+    const stocks = CIKs.slice(0, limit).map((stock: any) => ({
+      symbol: stock.symbol,
+      name: stock.name,
+      currency: stock.currency,
+      stockExchange: stock.stockExchange,
+      exchangeShortName: stock.exchangeShortName,
+    }));
 
-  //   const stocksInfo = await Promise.all(stocks.map(async (stock: any) => {
-  //     const response = await fetch(`https://financialmodelingprep.com/api/v3/quote/${stock.symbol}?&apikey=${apiKey}`);
-  //     const quoteData = await response.json();
+    showTable = true;
+    const stocksInfo = await Promise.all(stocks.map(async (stock: any) => {
+      const response = await fetch(`https://financialmodelingprep.com/api/v3/quote/${stock.symbol}?&apikey=${apiKey}`);
+      const quoteData = await response.json();
 
-  //     if (quoteData && quoteData.length > 0) {
-  //       return {
-  //         ...stock,
-  //         price: quoteData[0].price,
-  //         changes: quoteData[0].changes,
-  //         marketCap: quoteData[0].marketCap,
-  //         lastTrade: quoteData[0].lastTrade,
-  //       };
-  //     } else {
-  //       return {
-  //         symbol: stock.symbol,
-  //         name: stock.name,
-  //         currency: stock.currency,
-  //         stockExchange: stock.stockExchange,
-  //         exchangeShortName: stock.exchangeShortName,
-  //         price: 'N/A',
-  //         changes: 'N/A',
-  //         marketCap: 'N/A',
-  //         lastTrade: null,
-  //       };
-  //     }
-  //   }));
-  //   setResults(stocksInfo);
+      if (quoteData && quoteData.length > 0) {
+        return {
+          ...stock,
+          price: quoteData[0].price,
+          changes: quoteData[0].changes,
+          marketCap: quoteData[0].marketCap,
+          lastTrade: quoteData[0].lastTrade,
+        };
+      } else {
+        return {
+          symbol: stock.symbol,
+          name: stock.name,
+          currency: stock.currency,
+          stockExchange: stock.stockExchange,
+          exchangeShortName: stock.exchangeShortName,
+          price: 'N/A',
+          changes: 'N/A',
+          marketCap: 'N/A',
+          lastTrade: null,
+        };
+      }
+    }));
+    setResults(stocksInfo);
 
-  // };
+  };
 
   const handlePageChange = (newPage: number) => {
     console.log(page)
@@ -121,7 +124,7 @@ export default function Page() {
 
   const startIndex = (page - 1) * limit + 1;
   const endIndex = Math.min(page * limit, totalResults);
-
+  var showTable = false;
   console.log(startIndex, endIndex, totalResults, page)
   return (
     <main className="flex min-h-screen flex-col items-center bg-gradient-to-r from-purple-800 to-blue-600 p-6">
@@ -129,9 +132,9 @@ export default function Page() {
           <p className="text-3xl font-bold text-white text-center">
             Veyt Assignment
           </p>
-          <form className="flex flex-col items-center space-y-4">
+          {/* <form className="flex flex-col items-center space-y-4"> */}
 
-          {/* <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-4"> */}
+          <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-4">
             <input
               type="text"
               value={query}
@@ -159,7 +162,11 @@ export default function Page() {
               <tbody>
                 {results.map((result, index) => (
                   <tr key={result.symbol} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-gray-200'}>
-                    <td className="py-2 px-4">{result.symbol || 'Unknown'}</td>
+                    <td className="py-2 px-4">
+                      <Link href={`/history/${result.symbol}`}>
+                        <span className="cursor-pointer text-blue-500 underline">{result.symbol || 'Unknown'}</span>
+                      </Link>
+                    </td>                    
                     <td className="py-2 px-4">{result.name || 'Unknown'}</td>
                     <td className="py-2 px-4">{result.currency || 'N/A'}</td>
                     <td className="py-2 px-4">{result.stockExchange || 'N/A'}</td>
