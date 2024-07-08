@@ -13,15 +13,15 @@ const StockPage = ({ params: { symbol } }) => {
   const [historicalData, setHistoricalData] = useState<HistoricalDataPoint[] | null>(null);
 
     useEffect(() => {
-    const fetchQuoteData = async () => {
-      try {
-        const response = await fetch(`https://financialmodelingprep.com/api/v3/quote/${symbol}?apikey=${apiKey}`);
-        const data: QuoteData[] = await response.json();
-        setQuoteData(data[0]); 
-      } catch (error) {
-        console.error("Error fetching quote data:", error);
-      }
-    };
+      const fetchQuoteData = async () => {
+        try {
+          const response = await fetch(`https://financialmodelingprep.com/api/v3/quote/${symbol}?apikey=${apiKey}`);
+          const data: QuoteData[] = await response.json();
+          setQuoteData(data[0]); 
+        } catch (error) {
+          console.error("Error fetching quote data:", error);
+        }
+      };
 
     const fetchHistoricalData = async () => {
       try {
