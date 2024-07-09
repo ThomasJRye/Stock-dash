@@ -76,7 +76,6 @@ export default function Page() {
     const responseCIKs = await fetch(`https://financialmodelingprep.com/api/v3/search?query=${query}&offset=${offset}&apikey=${apiKey}`);
     if (responseCIKs.status === 429) {
       setErrorMessage('Too many requests. Please try again later.');
-      throw new Error('Too many requests. Please try again later.');
     }
     const CIKs = await responseCIKs.json();
     if (CIKs.length === 0) {
