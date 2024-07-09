@@ -92,7 +92,7 @@ const StockPage = ({ params: { symbol } }: Params) => {
       </div>
       <div id="chart" className="bg-white rounded-lg shadow-lg p-6" style={{ width: '600px' }}>
         {historicalData && <ReactApexChart
-            options={chartOptions}
+            option={chartOptions}
             series={chartOptions.series}
             type="line"
             height={350}
