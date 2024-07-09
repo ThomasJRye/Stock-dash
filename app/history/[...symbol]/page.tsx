@@ -17,21 +17,50 @@ const StockPage = ({ params: { symbol } }: Params) => {
   const apiKey = process.env.NEXT_PUBLIC_FINANCE_API_KEY;
   const [quoteData, setQuoteData] = useState<QuoteData | null>(null);
   const [historicalData, setHistoricalData] = useState<HistoricalDataPoint[] | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     useEffect(() => {
       const fetchQuoteData = async () => {
         try {
+          if (!apiKey) {
+            throw new Error("API key is missing.");
+          }
+          
           const response = await fetch(`https://financialmodelingprep.com/api/v3/quote/${symbol}?apikey=${apiKey}`);
+
+          if (!response.ok) {
+            if (response.status === 429) {
+              throw new Error("Too many requests. Please try again later.");
+            }
+            throw new Error(`Failed to fetch quote data for ${symbol}: ${response.statusText}`);
+          }
+            
           const data: QuoteData[] = await response.json();
+          if (data.length === 0) {
+            throw new Error(`No quote data found for symbol ${symbol}.`);
+          }
           setQuoteData(data[0]); 
         } catch (error) {
           console.error("Error fetching quote data:", error);
+          setErrorMessage(error instanceof Error ? error.message : 'An unknown error occurred.');
+
         }
       };
 
     const fetchHistoricalData = async () => {
       try {
+        if (!apiKey) {
+          throw new Error("API key is missing.");
+        }
         const response = await fetch(`https://financialmodelingprep.com/api/v3/historical-price-full/${symbol}?apikey=${apiKey}`);
+        
+        if (!response.ok) {
+          if (response.status === 429) {
+            throw new Error("Too many requests. Please try again later.");
+          }
+          throw new Error(`Failed to fetch historical data for ${symbol}: ${response.statusText}`);
+        
+        }
         const data: HistoricalDataResponse = await response.json();
       
       const oneMonthAgo = new Date();
@@ -41,9 +70,10 @@ const StockPage = ({ params: { symbol } }: Params) => {
       const reversedData = filteredData.reverse();
 
       setHistoricalData(reversedData); // Use the filtered and reversed data
-      } catch (error) {
-        console.error("Error fetching historical data:", error);
-      }
+    } catch (error) {
+      console.error("Error fetching historical data:", error);
+      setErrorMessage(error instanceof Error ? error.message : 'An unknown error occurred.');
+    }
     };
 
     fetchQuoteData();
@@ -94,6 +124,8 @@ const StockPage = ({ params: { symbol } }: Params) => {
             height={350}
           />}
       </div>
+      {errorMessage && <p className="text-red-500 position absolute">{errorMessage}</p>}
+
     </div>
   );
   

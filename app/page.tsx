@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from 'next/link';
 import React from "react";
 import { formatDistanceToNow } from 'date-fns';
@@ -24,15 +24,9 @@ export default function Page() {
     setQuery(e.target.value);
   };
 
-  function convertToInt(value: string | number | undefined): number {
-    console.log('Type of value:', typeof value);
-
-    return parseInt((value ?? '').toString(), 10);
-}
-
   const handleLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setLimit(Number(e.target.value));
-    setPage(1); // Reset to first page when limit changes
+    setPage(1);
   };
 
   const fetchStockData = async (stocks: any[]) => {
