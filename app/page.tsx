@@ -30,32 +30,42 @@ export default function Page() {
   };
 
   const fetchStockData = async (stocks: any[]) => {
-    const stocksInfo = await Promise.all(
-      stocks.map(async (stock: any) => {
-        const response = await fetch(`https://financialmodelingprep.com/api/v3/quote/${stock.symbol}?&apikey=${apiKey}`);
-        const quoteData = await response.json();
+    try {
+      const stocksInfo = await Promise.all(
+        stocks.map(async (stock: any) => {
+          const response = await fetch(`https://financialmodelingprep.com/api/v3/quote/${stock.symbol}?&apikey=${apiKey}`);
+          if (response.status === 429) {
+            console.log('Too many requests. Please try again later.');
+            setErrorMessage('Too many requests. Please try again later.');
+            throw new Error('Too many requests. Please try again later.');
+          }
+          if (!response.ok) throw new Error(`Failed to fetch quote for ${stock.symbol}`);
+          const quoteData = await response.json();
 
-        if (quoteData && quoteData.length > 0) {
-          return {
-            ...stock,
-            price: quoteData[0].price,
-            change: quoteData[0].change,
-            changesPercentage: quoteData[0].changesPercentage,
-            marketCap: quoteData[0].marketCap,
-            lastTrade: formatDistanceToNow(new Date(quoteData[0].timestamp * 1000), { addSuffix: true }),
-          };
-        } else {
-          return {
-            ...stock,
-            price: 'N/A',
-            changes: 'N/A',
-            marketCap: 'N/A',
-            lastTrade: null,
-          };
-        }
-      })
-    );
-    setResults(stocksInfo);
+          if (quoteData && quoteData.length > 0) {
+            return {
+              ...stock,
+              price: quoteData[0].price,
+              change: quoteData[0].change,
+              changesPercentage: quoteData[0].changesPercentage,
+              marketCap: quoteData[0].marketCap,
+              lastTrade: formatDistanceToNow(new Date(quoteData[0].timestamp * 1000), { addSuffix: true }),
+            };
+          } else {
+            return {
+              ...stock,
+              price: 'N/A',
+              changes: 'N/A',
+              marketCap: 'N/A',
+              lastTrade: null,
+            };
+          }
+        })
+      );
+      setResults(stocksInfo);
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -64,6 +74,10 @@ export default function Page() {
     const offset = (page - 1) * limit;
 
     const responseCIKs = await fetch(`https://financialmodelingprep.com/api/v3/search?query=${query}&offset=${offset}&apikey=${apiKey}`);
+    if (responseCIKs.status === 429) {
+      setErrorMessage('Too many requests. Please try again later.');
+      throw new Error('Too many requests. Please try again later.');
+    }
     const CIKs = await responseCIKs.json();
     if (CIKs.length === 0) {
       setErrorMessage("No results found.");
@@ -219,6 +233,7 @@ export default function Page() {
             </div>
           </div>
         )}
+        {errorMessage && <p className="text-red-500 position absolute">{errorMessage}</p>}
       </div>
     </main>
   );
