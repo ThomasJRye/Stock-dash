@@ -2,11 +2,17 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ReactApexChart from 'react-apexcharts';
-import { QuoteData, HistoricalDataPoint, HistoricalDataResponse } from '../../types';
+import { QuoteData, HistoricalDataPoint, HistoricalDataResponse, Params } from '../../types';
 import '../../ui/global.css';
 
+type Params = {
+  params: {
+    symbol: string;
+  };
+};
 
-const StockPage = ({ params: { symbol } }) => {
+
+const StockPage = ({ params: { symbol } }: Params) => {
   const router = useRouter();
   const apiKey = process.env.NEXT_PUBLIC_FINANCE_API_KEY;
   const [quoteData, setQuoteData] = useState<QuoteData | null>(null);

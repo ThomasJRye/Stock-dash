@@ -63,4 +63,10 @@ export interface QuoteData {
     marketCap?: number | string;
     lastTrade?: string | null;
   }
+
+  type Params = {
+    params: {
+      symbol: string;
+    };
+  };
   
