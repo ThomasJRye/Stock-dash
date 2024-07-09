@@ -24,6 +24,12 @@ export default function Page() {
     setQuery(e.target.value);
   };
 
+  function convertToInt(value: string | number | undefined): number {
+    console.log('Type of value:', typeof value);
+
+    return parseInt((value ?? '').toString(), 10);
+}
+
   const handleLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setLimit(Number(e.target.value));
     setPage(1); // Reset to first page when limit changes
@@ -46,7 +52,7 @@ export default function Page() {
             return {
               ...stock,
               price: quoteData[0].price,
-              change: quoteData[0].change,
+              change: +quoteData[0].change,
               changesPercentage: quoteData[0].changesPercentage,
               marketCap: quoteData[0].marketCap,
               lastTrade: formatDistanceToNow(new Date(quoteData[0].timestamp * 1000), { addSuffix: true }),
@@ -136,7 +142,7 @@ export default function Page() {
 
         {results.length > 0 && (
           <div className="mt-6">
-            <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+            <table className="min-w-full shadow-md rounded-lg overflow-hidden">
               <thead className="bg-gray-800 text-white">
                 <tr>
                   <th className="py-2 px-4">Symbol</th>
@@ -152,50 +158,50 @@ export default function Page() {
               </thead>
               <tbody>
               {results.map((result, index) => (
-                <tr key={result.symbol} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-gray-200'}>
+                <tr key={result.symbol} style={{ backgroundColor: index % 2 === 0 ? "rgb(55, 68, 107)" : "rgb(45, 58, 97)" }}>
                   <td className="py-2 px-4">
                     <Link href={`/history/${result.symbol}`}>
-                      <span className="py-2 px-4">{result.symbol || 'Unknown'}</span>
+                      <span className="py-2 px-4 text-white">{result.symbol || 'Unknown'}</span>
                     </Link>
                   </td>
                   <td className="py-2 px-4">
                     <Link href={`/history/${result.symbol}`}>
-                      <span className="py-2 px-4">{result.name || 'Unknown'}</span>
+                      <span className="py-2 px-4 text-white">{result.name || 'Unknown'}</span>
                     </Link>
                   </td>
                   <td className="py-2 px-4">
                     <Link href={`/history/${result.symbol}`}>
-                      <span className="py-2 px-4">{result.currency || 'N/A'}</span>
+                      <span className="py-2 px-4 text-white">{result.currency || 'N/A'}</span>
                     </Link>
                   </td>
                   <td className="py-2 px-4">
                     <Link href={`/history/${result.symbol}`}>
-                      <span className="py-2 px-4">{result.stockExchange || 'N/A'}</span>
+                      <span className="py-2 px-4 text-white">{result.stockExchange || 'N/A'}</span>
                     </Link>
                   </td>
                   <td className="py-2 px-4">
                     <Link href={`/history/${result.symbol}`}>
-                      <span className="py-2 px-4">{result.exchangeShortName || 'N/A'}</span>
+                      <span className="py-2 px-4 text-white">{result.exchangeShortName || 'N/A'}</span>
                     </Link>
                   </td>
                   <td className="py-2 px-4">
                     <Link href={`/history/${result.symbol}`}>
-                      <span className="py-2 px-4">{result.price || 'N/A'}</span>
+                      <span className="py-2 px-4 text-white">{result.price || 'N/A'}</span>
                     </Link>
                   </td>
-                  <td className="py-2 px-4">
+                  <td className={`${result.change !== undefined && +result.change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                     <Link href={`/history/${result.symbol}`}>
                       <span className="py-2 px-4">{result.change + " (" + result.changesPercentage + "%)" || 'N/A'}</span>
                     </Link>
                   </td>
                   <td className="py-2 px-4">
                     <Link href={`/history/${result.symbol}`}>
-                      <span className="py-2 px-4">{result.marketCap || 'N/A'}</span>
+                      <span className="py-2 px-4 text-white">{result.marketCap || 'N/A'}</span>
                     </Link>
                   </td>
                   <td className="py-2 px-4">
                     <Link href={`/history/${result.symbol}`}>
-                      <span className="py-2 px-4">{result.lastTrade || 'N/A'}</span>
+                      <span className="py-2 px-4 text-white">{result.lastTrade || 'N/A'}</span>
                     </Link>
                   </td>
                 </tr>
@@ -214,23 +220,23 @@ export default function Page() {
                 <option value={15}>15 Items</option>
               </select>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex rounded-md items-center space-x-2" style={{ backgroundColor: "rgb(221, 221, 221)", borderColor: "rgb(21 90 143)", color: "white" }}>
                 <button
                   onClick={() => handlePageChange(page - 1)}
                   disabled={page === 1}
                   className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
                 >
-                  &lt;
-                </button>
-                <span className="text-gray-700">
+                  <span className="text-black">&lt;</span>
+                  </button>
+                <span className="text-black">
                   {startIndex}-{endIndex} of {totalResults}
                 </span>
                 <button
                   onClick={() => handlePageChange(page + 1)}
                   disabled={endIndex >= totalResults}
-                  className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                  className="px-4 py-2 rounded-md bg-gray hover:bg-gray-300 disabled:opacity-50"
                 >
-                  &gt;
+                  <span className="text-black">&gt;</span>
                 </button>
               </div>
             </div>

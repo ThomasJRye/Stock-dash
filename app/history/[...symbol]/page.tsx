@@ -52,9 +52,6 @@ const StockPage = ({ params: { symbol } }: Params) => {
 
   const chartOptions = {
     // Define your chart options here
-    chart: {
-      type: 'line',
-    },
     series: [
       {
         name: 'Price',
@@ -92,9 +89,8 @@ const StockPage = ({ params: { symbol } }: Params) => {
       </div>
       <div id="chart" className="bg-white rounded-lg shadow-lg p-6" style={{ width: '600px' }}>
         {historicalData && <ReactApexChart
-            option={chartOptions}
+            options={chartOptions}
             series={chartOptions.series}
-            type="line"
             height={350}
           />}
       </div>
