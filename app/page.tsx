@@ -64,7 +64,11 @@ export default function Page() {
       );
       setResults(stocksInfo);
     } catch (error) {
-      setErrorMessage(error.message);
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage(String(error));
+      }
     }
   };
 
