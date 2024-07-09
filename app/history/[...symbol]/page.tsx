@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ReactApexChart from 'react-apexcharts';
-import { QuoteData, HistoricalDataPoint, HistoricalDataResponse, Params } from '../../types';
+import { QuoteData, HistoricalDataPoint, HistoricalDataResponse } from '../../types';
 import '../../ui/global.css';
 
 type Params = {
