@@ -58,7 +58,8 @@ export interface QuoteData {
     stockExchange: string;
     exchangeShortName: string;
     price?: number | string;
-    changes?: number | string;
+    changesPercentage?: number | string;
+    change?: number | string;
     marketCap?: number | string;
     lastTrade?: string | null;
   }

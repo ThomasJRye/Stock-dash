@@ -3,8 +3,11 @@
 import { useState, useEffect } from "react";
 import Link from 'next/link';
 import React from "react";
+import { formatDistanceToNow } from 'date-fns';
+
 import { Stock } from "./types";
 import './ui/global.css';
+
 
 export default function Page() {
   const [query, setQuery] = useState("");
@@ -36,9 +39,10 @@ export default function Page() {
           return {
             ...stock,
             price: quoteData[0].price,
-            changes: quoteData[0].changes,
+            change: quoteData[0].change,
+            changesPercentage: quoteData[0].changesPercentage,
             marketCap: quoteData[0].marketCap,
-            lastTrade: quoteData[0].lastTrade,
+            lastTrade: formatDistanceToNow(new Date(quoteData[0].timestamp * 1000), { addSuffix: true }),
           };
         } else {
           return {
@@ -96,19 +100,19 @@ export default function Page() {
   const endIndex = Math.min(page * limit, totalResults);
 
   return (
-    <main className="flex min-h-screen flex-col items-center bg-gradient-to-r from-purple-800 to-blue-600 p-6">
-      <div className="mt-4 flex grow flex-col gap-4 md:w-2/3">
-        <p className="text-3xl font-bold text-white text-center">
+    <main className="flex min-h-screen min-w-screen md:w-f flex-col items-center bg-gradient-to-r from-purple-800 to-blue-600 p-6">
+      <div className="mt-4 flex grow flex-col gap-4 md:w-200">
+        <p className={`text-4xl font-bold text-white text-center ${results.length > 0 ? '' : 'pt-[75%]'}`}>
           Veyt Assignment
         </p>
 
-        <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-4">
+        <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-4 w-full pt-[50px]">
           <input
             type="text"
             value={query}
             onChange={handleInputChange}
             style={{ backgroundColor: "rgb(55, 68, 107)", borderColor: "rgb(73 90 143)", color: "white" }}
-            className="w-1/2 rounded-md border border-gray-200 py-2 px-4 text-gray-700"
+            className="rounded-3xl border border-gray-200 py-2 px-4 text-gray-700 w-[350px] "
             placeholder="Search for a Stock..."
           />
         </form>
@@ -130,23 +134,55 @@ export default function Page() {
                 </tr>
               </thead>
               <tbody>
-                {results.map((result, index) => (
-                  <tr key={result.symbol} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-gray-200'}>
-                    <td className="py-2 px-4">
-                      <Link href={`/history/${result.symbol}`}>
-                        <span className="cursor-pointer text-blue-500 underline">{result.symbol || 'Unknown'}</span>
-                      </Link>
-                    </td>
-                    <td className="py-2 px-4">{result.name || 'Unknown'}</td>
-                    <td className="py-2 px-4">{result.currency || 'N/A'}</td>
-                    <td className="py-2 px-4">{result.stockExchange || 'N/A'}</td>
-                    <td className="py-2 px-4">{result.exchangeShortName || 'N/A'}</td>
-                    <td className="py-2 px-4">{result.price || 'N/A'}</td>
-                    <td className="py-2 px-4">{result.changes || 'N/A'}</td>
-                    <td className="py-2 px-4">{result.marketCap || 'N/A'}</td>
-                    <td className="py-2 px-4">{result.lastTrade || 'N/A'}</td>
-                  </tr>
-                ))}
+              {results.map((result, index) => (
+                <tr key={result.symbol} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-gray-200'}>
+                  <td className="py-2 px-4">
+                    <Link href={`/history/${result.symbol}`}>
+                      <span className="py-2 px-4">{result.symbol || 'Unknown'}</span>
+                    </Link>
+                  </td>
+                  <td className="py-2 px-4">
+                    <Link href={`/history/${result.symbol}`}>
+                      <span className="py-2 px-4">{result.name || 'Unknown'}</span>
+                    </Link>
+                  </td>
+                  <td className="py-2 px-4">
+                    <Link href={`/history/${result.symbol}`}>
+                      <span className="py-2 px-4">{result.currency || 'N/A'}</span>
+                    </Link>
+                  </td>
+                  <td className="py-2 px-4">
+                    <Link href={`/history/${result.symbol}`}>
+                      <span className="py-2 px-4">{result.stockExchange || 'N/A'}</span>
+                    </Link>
+                  </td>
+                  <td className="py-2 px-4">
+                    <Link href={`/history/${result.symbol}`}>
+                      <span className="py-2 px-4">{result.exchangeShortName || 'N/A'}</span>
+                    </Link>
+                  </td>
+                  <td className="py-2 px-4">
+                    <Link href={`/history/${result.symbol}`}>
+                      <span className="py-2 px-4">{result.price || 'N/A'}</span>
+                    </Link>
+                  </td>
+                  <td className="py-2 px-4">
+                    <Link href={`/history/${result.symbol}`}>
+                      <span className="py-2 px-4">{result.change + " (" + result.changesPercentage + "%)" || 'N/A'}</span>
+                    </Link>
+                  </td>
+                  <td className="py-2 px-4">
+                    <Link href={`/history/${result.symbol}`}>
+                      <span className="py-2 px-4">{result.marketCap || 'N/A'}</span>
+                    </Link>
+                  </td>
+                  <td className="py-2 px-4">
+                    <Link href={`/history/${result.symbol}`}>
+                      <span className="py-2 px-4">{result.lastTrade || 'N/A'}</span>
+                    </Link>
+                  </td>
+                </tr>
+              ))}
               </tbody>
             </table>
             <div className="flex items-center justify-between pt-4">
