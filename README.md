@@ -1,1 +1,1 @@
-## Next.js Veyt Assignment
+## Next.js dashboard for stocks
